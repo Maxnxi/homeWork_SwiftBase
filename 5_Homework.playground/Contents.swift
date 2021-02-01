@@ -17,8 +17,8 @@ enum EngineStatus : String {
     case engineOff = "Двигатель выключен"
 }
 enum WindowStatus : String {
-    case window_open = "Окно закрыто"
-    case window_closed = "Окно открыто"
+    case window_open = "Окна открыты"
+    case window_closed = "Окна закрыты"
 }
 enum FuelQuantity : String {
     case full_tank = "Полный бак"
@@ -31,8 +31,8 @@ enum JamesBondStatus : String {
 }
 enum BreakageStatus : String {
     case fully_broken = "машина сломана!"
-    case light_break = "легкая поломка, течет масло."
-    case not_broken = "машина на ходу."
+    case light_break = "легкая поломка, течет масло"
+    case not_broken = "машина на ходу"
 }
 
 protocol Car {
@@ -46,7 +46,7 @@ protocol Car {
     var status_JB : JamesBondStatus { get set }
     
     func action()
-    func printInfo()
+    func printInfoCar()
     
 }
 
@@ -99,12 +99,17 @@ extension Car {
         print(break_state.rawValue)
     }
     
-    func printInfo(){
-        print("--------------------")
+    func printInfoCar(){
+        print("\n--------------------")
         print("Марка автомобиля: \(brand)")
         print("Год производства: \(year)")
-        print("Можность автомобиля \(engine_power) л.с.")
-        print()
+        print("Мощность автомобиля \(engine_power) л.с.")
+        print(break_state.rawValue)
+        print(engine_state.rawValue , window_state.rawValue , tank_fullness.rawValue, break_state.rawValue, separator: ", ", terminator: ".\n")
+        if (status_JB == .jb_activated) {
+            print(status_JB.rawValue)
+        }
+        print("--------------------")
     }
     
 }
@@ -120,8 +125,8 @@ enum Sport_body_kit : String {
     case uninstalled = "снят спортвный обвес"
 }
 enum Upgrades : String {
-    case upgraded = " усовершенствован"
-    case upgraded_Off = " стандартный"
+    case upgraded = "усовершенствован(ы)"
+    case upgraded_Off = "стандартный(ые)"
 }
 enum Part : String {
     case wheels = "Колеса"
@@ -129,6 +134,8 @@ enum Part : String {
 }
 
 class SportCar: Car {
+   
+    
     internal var brand: String
     internal var year: UInt {
         didSet{
@@ -148,7 +155,7 @@ class SportCar: Car {
     
     private var painted : Painting_on_Car {
         didSet {
-            print(painted.rawValue)
+            print("Раскраска автомобиля - ",painted.rawValue)
         }
     }
     private var sport_body_kit : Sport_body_kit{
@@ -158,15 +165,16 @@ class SportCar: Car {
     }
     private var wheels : Upgrades {
         didSet {
-            print(wheels.rawValue)
+            print("Колеса - ",wheels.rawValue)
         }
     }
     private var engine : Upgrades {
         didSet {
-            print(engine.rawValue)
+            print("Двигатель - ",engine.rawValue)
         }
     }
     lazy var technicView_need = Bool()
+    
     
     init(brand: String, year:UInt, engine_power: Double,
          engine_state:EngineStatus = .engineOff,
@@ -204,7 +212,7 @@ class SportCar: Car {
             technicView_need = true
         } else {
             technicView_need = false
-            print("Ваш автомобиль - новый, ТО - не требуется!")
+            print("Ваш автомобиль - новый, Технический осмотр - не требуется!")
         }
     }
     
@@ -237,37 +245,166 @@ class SportCar: Car {
         }
     }
     
+    func printInfoSportCar(){
+    printInfoCar()
+        print("Ваш автомобиль - Спорткар")
+        print("Вид раскраски автомобиля - \(painted.rawValue)")
+        print(sport_body_kit.rawValue)
+        print("Двигатель - \(engine.rawValue)")
+        print("Колеса - \(wheels.rawValue)")
+        print("--------------------\n")
+    }
+    
+    deinit {
+        print("Объект удален!")
+    }
     
 }
 
-//extension SportCar : CustomStringConvertible {
-//    var description: String {
-//        return String(describing: SportCar(brand: self.brand, year: self.year, engine_power: self.engine_power))
-//    }
-//    
-//    func printDescription(){
-//        print(description)
-//    }
-//        
-//    }
-    
+extension SportCar : CustomStringConvertible {
+    var description: String {
+        return ("Ваш автомобиль - \(brand)")
+    }
+        
+    }
+//enum для  TrunkCar
 
-    
+enum TrunkKind :String {
+    case coverred_trunk = "крытый кузов"
+    case opened_trunk = "открытый кузов"
+    case refrigerator = "кузов Холодильник"
+}
 
-//class trunkCat: Car {}
-//
-//
+enum TrailSetup : String {
+    case trail_on = "Прицеп подключен"
+    case trail_off = "Прицеп снят"
+}
+
+// Классс TrunkCar
+
+class TrunkCar: Car {
+    var brand: String
+    var year: UInt
+    var engine_power: Double
+    var engine_state: EngineStatus
+    var window_state: WindowStatus
+    var tank_fullness: FuelQuantity
+    var break_state: BreakageStatus
+    var status_JB: JamesBondStatus
+    
+    private var trunk_kind: TrunkKind {
+        didSet{
+            print(trunk_kind.rawValue)
+        }
+    }
+    private var trail_state: TrailSetup {
+        didSet{
+            print(trail_state.rawValue)
+        }
+    }
+    func action() {
+        
+    }
+    
+    init(brand: String, year:UInt, engine_power: Double,
+         engine_state:EngineStatus = .engineOff,
+         window_state: WindowStatus = .window_closed,
+         tank_fullness: FuelQuantity = .full_tank,
+         break_state: BreakageStatus = .not_broken,
+         trail_state: TrailSetup = .trail_off,
+         trunk_kind: TrunkKind = .opened_trunk,
+         status_JB: JamesBondStatus = .jb_deactivated){
+        
+        self.brand = brand
+        self.year = year
+        self.engine_power = engine_power
+        self.engine_state = engine_state
+        self.window_state = window_state
+        self.tank_fullness = tank_fullness
+        self.break_state = break_state
+        self.trail_state = trail_state
+        self.trunk_kind = trunk_kind
+        self.status_JB = status_JB
+        
+    }
+    
+    func changeTrunk(type:TrunkKind){
+        trunk_kind = type
+    }
+    
+    func changeTrail(){
+        if (trail_state == .trail_on) {
+            trail_state = .trail_off
+        } else {
+            trail_state = .trail_on
+        }
+    }
+    
+    func printInfoTrunkCar(){
+    printInfoCar()
+        print("Ваш автомобиль - Грузовой")
+        print("Вид кузова - \(trunk_kind.rawValue)")
+        print(trail_state.rawValue)
+        print("--------------------\n")
+    }
+    
+    deinit {
+        print("Объект удален!")
+    }
+    
+    
+}
+
+extension TrunkCar : CustomStringConvertible {
+    var description: String {
+        return ("Ваш автомобиль - \(brand)")
+    }
+}
+
 
 
 //Испытания
 
 var sportCar1 = SportCar(brand: "Audi", year: 2020, engine_power: 262.5)
 
-//sportCar1.printDescription()
+sportCar1.printInfoCar()
+
 sportCar1.engineStart()
 sportCar1.openWindow()
 sportCar1.checkCarForTechnicControll()
 sportCar1.refill_tank()
 sportCar1.action_JB_On()
 sportCar1.repair()
+sportCar1.printInfoSportCar()
 
+sportCar1.paint(type: .painted_camouflage)
+sportCar1.change_sportKit()
+sportCar1.upgrades(part: .engine, set: .upgraded)
+
+sportCar1.printInfoSportCar()
+
+print(sportCar1)
+
+var sportCar2 = SportCar(brand: "Aston martin", year: 1958, engine_power: 300.7)
+sportCar2.engineStart()
+sportCar2.action_JB_On()
+
+
+sportCar1 = sportCar2
+
+print(sportCar1)
+
+sportCar1.printInfoCar()
+
+var sportCar3 = SportCar(brand: "TVR", year: 2011, engine_power: 526.3)
+
+sportCar3.engineStart()
+
+sportCar1 = sportCar3
+sportCar1.printInfoCar()
+
+var trunk1 = TrunkCar(brand: "Kamaz", year: 2019, engine_power: 400.5)
+trunk1.changeTrunk(type: .refrigerator)
+trunk1.changeTrail()
+print(trunk1)
+trunk1.printInfoTrunkCar()
