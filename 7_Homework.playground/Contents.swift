@@ -6,9 +6,6 @@ import UIKit
 import Foundation
 
 
-//var regular_respond :
-//var error_respond
-//"Error need length between 0 and 20!"
 enum Respond_Errors: Error {
     case irregular_respond
     case irregular_length_respond(lengthIs:Int)
@@ -16,9 +13,6 @@ enum Respond_Errors: Error {
 
 class Respond {
     static let instance = Respond()
-    
-    init() {
-    }
     
     public func generate_respond(mylength:Int) -> (String?, Respond_Errors?) {
         guard mylength >= 0 && mylength < 20 else {return (nil, Respond_Errors.irregular_length_respond(lengthIs: mylength)) }
@@ -33,104 +27,77 @@ class Respond {
 
 class Respond_processing {
     static let instance = Respond_processing()
-    //private var respond :Respond
     
-    init(){
-        //guard let respond.length == 11 else {return nil}
-        //self.respond = respond
+    func extract_respond(respond: (String?, Respond_Errors?)) throws -> String {
+        guard (respond.0 != nil) else {throw Respond_Errors.irregular_respond}
+        let tmpString = String(describing: respond.0)
+        
+        //let errIndex: String.Index = tmpString.endIndex
+        let index1: String.Index = tmpString.lastIndex(of: ":")! //?? errIndex
+        let index2: String.Index = tmpString.lastIndex(of: "\"")! //?? errIndex
+        let tmp1 = String(tmpString[..<index2])
+        var tmp2 = String(tmp1[index1...])
+        tmp2.remove(at: tmp2.startIndex)
+        
+        guard tmp2.count == 11 else {throw Respond_Errors.irregular_length_respond(lengthIs: tmp2.count)}
+        return ("\(tmp2)")
     }
     
-    func extract_respond(respond: (String?, Respond_Errors?)) -> String {
-        //TO DO
-        return ("")
-    }
-    
-    func convert_respond_to_String(respond:(String?, Respond_Errors?)) throws -> String {
-        return ("\(respond)")
-    }
-    
+//    func convert_respond_to_String(respond:(String?, Respond_Errors?)) throws -> String {
+//        return ("\(respond)")
+//    }
 //    func create_answer(respond:Respond) throws -> (String?, Respond_Errors?) {
-//        guard
-//
+//        guard (respond.0 != nil) else {throw Respond_Errors.irregular_respond}
+//        guard tmp2.count == 11 else {throw Respond_Errors.irregular_length_respond(lengthIs: tmp2.count)}
 //        return (" ")
 //    }
     
 }
 
-
-
-//generate_respond(mylength: 11)
-
+//Испытания
 // Задание №1
+let example1 = "\nЗадание №1\n"
+print(example1)
 let respond_1 = Respond.instance.generate_respond(mylength: 3)
-let respond_2 = Respond.instance.generate_respond(mylength: 21)
+let respond_2 = Respond.instance.generate_respond(mylength: 11)
+let respond_3 = Respond.instance.generate_respond(mylength: 11)
+let respond_4 = Respond.instance.generate_respond(mylength: 21)
+let respond_5 = Respond.instance.generate_respond(mylength: 11)
 print(respond_1)
 print(respond_2)
+print(respond_3)
+print(respond_4)
+print(respond_5)
 
 // Задание №2
+let example2 = "\nЗадание №2\n"
+print(example2)
 
-let respond_Process1 = Respond_processing.instance.extract_respond(respond: respond_1)
-print(respond_Process1)
-
-public extension String {
-  subscript(value: Int) -> Character {
-    self[index(at: value)]
-  }
+do {
+    let respond_Process1 = try Respond_processing.instance.extract_respond(respond: respond_1)
+} catch Respond_Errors.irregular_respond {
+  print("Не правильный отклик")
+} catch Respond_Errors.irregular_length_respond(let mylength) {
+    print("Не правильная длина отклика - \(mylength)")
 }
 
-public extension String {
-  subscript(value: NSRange) -> Substring {
-    self[value.lowerBound..<value.upperBound]
-  }
+do {
+    let respond_Process2 = try Respond_processing.instance.extract_respond(respond: respond_2)
+    print("отклик успешен")
+    let respond_Process3 = try Respond_processing.instance.extract_respond(respond: respond_3)
+    print("отклик успешен")
+} catch Respond_Errors.irregular_respond {
+  print("Не правильный отклик")
+} catch Respond_Errors.irregular_length_respond(let mylength) {
+    print("Не правильная длина отклика - \(mylength)")
 }
 
-public extension String {
-  subscript(value: CountableClosedRange<Int>) -> Substring {
-    self[index(at: value.lowerBound)...index(at: value.upperBound)]
-  }
-
-  subscript(value: CountableRange<Int>) -> Substring {
-    self[index(at: value.lowerBound)..<index(at: value.upperBound)]
-  }
-
-  subscript(value: PartialRangeUpTo<Int>) -> Substring {
-    self[..<index(at: value.upperBound)]
-  }
-
-  subscript(value: PartialRangeThrough<Int>) -> Substring {
-    self[...index(at: value.upperBound)]
-  }
-
-  subscript(value: PartialRangeFrom<Int>) -> Substring {
-    self[index(at: value.lowerBound)...]
-  }
-}
-
-private extension String {
-  func index(at offset: Int) -> String.Index {
-    index(startIndex, offsetBy: offset)
-  }
-}
-
-
-func extract_respond(respond: (String?, Respond_Errors?)) -> String {
-    let tmpString = String(describing: respond.0)
-    print(tmpString)
-    let index1 = tmpString.lastIndex(of: ":")!
-    let index2 = tmpString.lastIndex(of: "\"")!
-    
-    var tmp1 = String(tmpString[..<10])
-//    tmp1.substring(from: index1)
-//    tmp1.substring(to: index2)
-    
-    
-    print("end", tmp1)
-    //var respond = Decimal()
-    
-    //Scanner(string: tmpString).scanDecimal(&respond)
-    //print(respond)
-    return ("end")
-}
-
-
-extract_respond(respond: respond_1)
+do {
+        let respond_Process4 = try Respond_processing.instance.extract_respond(respond: respond_4)
+        let _ = try Respond_processing.instance.extract_respond(respond: respond_5) // не выпоняется из-за ошибки в respond_4
+        print("отклик успешен")
+    } catch Respond_Errors.irregular_respond {
+      print("Не правильный отклик")
+    } catch Respond_Errors.irregular_length_respond(let mylength) {
+        print("Не правильная длина отклика - \(mylength)")
+    }
